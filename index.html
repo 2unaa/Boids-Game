@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <script src="https://code.jquery.com/jquery-3.7.1.js"
+        integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>
+    <script src="script.js"></script>
+</head>
+
+<body>
+    <canvas id="mycanvas" style="border: 5px solid #000000; display: block; margin: auto"></canvas>
+
+    <script>
+        const canvas = document.querySelector("canvas");
+        const sprites_to_draw = new Array(2);
+        let draw_loop_timeout;
+        var keyCode;
+
+        sprites_to_draw[0] = new Array(0); //background and 
+        sprites_to_draw[1] = new Array(0); //forground
+
+        $(document).ready(function () {
+            console.log("Page is now ready");
+            resize();
+
+            // Load sprite data
+            $.getJSON("Penguins/animationData.json", function (data) {
+                sprites_to_draw[1].push(new Sprite(data, 150, 300, "idle"));
+            });
+
+
+            draw_loop_timeout = setInterval(draw_loop, 33);
+
+
+            window.addEventListener('resize', resize);
+
+
+            window.addEventListener('keydown', function (event) {
+                keyCode = event.keyCode;
+                const sprite = sprites_to_draw[1][0]; // Assuming there's only one sprite for simplicity
+
+                if (keyCode === 37) { // Left arrow
+                    sprite.moveLeft();
+                } else if (keyCode === 39) { // Right arrow
+                    sprite.moveRight();
+                } else if (keyCode === 38) { // Up arrow
+                    sprite.moveUp();
+                } else if (keyCode === 40) { // Down arrow
+                    sprite.moveDown();
+                }
+            });
+        });
+
+        function draw_loop() {
+            const context = canvas.getContext('2d');
+            context.clearRect(0, 0, canvas.width, canvas.height);
+
+            // Draw foreground sprites
+            for (let i = 0; i < sprites_to_draw[1].length; i++) {
+                sprites_to_draw[1][i].draw(
+                );
+            }
+        }
+
+        function resize() {
+            canvas.width = window.innerWidth - 35;
+            canvas.height = window.innerHeight - 35;
+        }
+    </script>
+</body>
+
+</html>

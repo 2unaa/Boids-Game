@@ -15,7 +15,7 @@ function setup() {
   alignSlider = createSlider(0, 2, 1, 0.1);
   cohesionSlider = createSlider(0, 2, 1, 0.1);
   separationSlider = createSlider(0, 2, 1, 0.1);
-  for (let i = 0; i < 3; i++) {
+  for (let i = 0; i < 10; i++) {
     flock.push(new Boid());
   }
 }
@@ -23,7 +23,6 @@ function setup() {
 function draw() {
   background(51);
   for (let boid of flock) {
-    x
     boid.edges();
     boid.flock(flock);
     boid.update();
