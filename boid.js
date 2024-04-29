@@ -5,13 +5,14 @@
 // https://editor.p5js.org/codingtrain/sketches/ry4XZ8OkN
 
 class Boid {
-  constructor() {
+  constructor(sprites) {
     this.position = createVector(random(width), random(height));
     this.velocity = p5.Vector.random2D();
     this.velocity.setMag(random(2, 4));
     this.acceleration = createVector();
     this.maxForce = 1;
-    this.maxSpeed = 4;
+    this.maxSpeed = 2;
+    this.sprites = random(sprites);
   }
 
   edges() {
@@ -127,8 +128,12 @@ class Boid {
   }
 
   show() {
-    strokeWeight(8);
-    stroke(255);
-    point(this.position.x, this.position.y);
+    // Calculate direction based on velocity
+    let angle = this.velocity.heading() + radians(90);
+    push();
+    translate(this.position.x, this.position.y);
+    rotate(angle);
+    imageMode(CENTER);
+    this.sprites.draw()
   }
 }

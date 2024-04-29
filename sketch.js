@@ -6,22 +6,34 @@
 // https://youtu.be/mhjuuHl6qHM
 // https://editor.p5js.org/codingtrain/sketches/ry4XZ8OkN
 
+const sprites_to_draw = [];
 const flock = [];
+
+function preload() {
+  // Use the preload function to ensure sprites are loaded before setup runs
+  loadJSON("../../Penguins/animationData.json", function (data) {
+    sprites_to_draw.push(new Sprite(data, -10, -10, "idle"));
+    sprites_to_draw.push(new Sprite(data, -10, -10, "idleBackAndForth"));
+    sprites_to_draw.push(new Sprite(data, -10, -10, "idleBreathing"));
+  });
+}
+
+
 
 let alignSlider, cohesionSlider, separationSlider;
 
 function setup() {
-  createCanvas(640, 360);
+  createCanvas(1000, 500);
   alignSlider = createSlider(0, 2, 1, 0.1);
   cohesionSlider = createSlider(0, 2, 1, 0.1);
   separationSlider = createSlider(0, 2, 1, 0.1);
-  for (let i = 0; i < 10; i++) {
-    flock.push(new Boid());
+  for (let i = 0; i < 3; i++) {
+    flock.push(new Boid(sprites_to_draw));
   }
 }
 
 function draw() {
-  background(51);
+  background(100);
   for (let boid of flock) {
     boid.edges();
     boid.flock(flock);
