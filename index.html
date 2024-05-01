@@ -3,22 +3,65 @@
 
 <head>
   <meta charset="UTF-8" />
-  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>flocking</title>
-  <script src="https://cdn.jsdelivr.net/npm/p5@1.4.1/lib/p5.min.js"></script>
+  <script src="vector.js"></script>
   <script src="https://code.jquery.com/jquery-3.7.1.js" integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4="
     crossorigin="anonymous"></script>
-
-  <script src="boid.js"></script>
-  <script src="sketch.js"></script>
   <script src="sprite.js"></script>
-  <script>
-
-
-  </script>
 </head>
 
-<body></body>
+<body>
+  <canvas id="mycanvas" style="border: 5px solid #000000; display: block; margin: auto"></canvas>
+
+  <script>
+    const canvas = document.querySelector("canvas");
+    const sprites_to_draw = [[], []]; //background and foreground sprites
+    let draw_loop_timeout;
+    let flock = [];
+
+
+    $(document).ready(function () {
+      console.log("Page is now ready");
+      resize();
+
+
+      $.getJSON("Penguins/animationData.json", function (data) {
+        sprites_to_draw[1].push(new Sprite(data, 500, 100, "idleWave"));
+        sprites_to_draw[1].push(new Sprite(data, 400, 200, "idleWave"));
+        sprites_to_draw[1].push(new Sprite(data, 300, 300, "idleWave"));
+      });
+
+
+      draw_loop_timeout = setInterval(draw_loop, 50);
+
+
+      window.addEventListener('resize', resize);
+
+    });
+
+    function draw_loop() {
+      const context = canvas.getContext('2d');
+      context.clearRect(0, 0, canvas.width, canvas.height);
+      //do background here so it redraws the bg first and only the bg
+      const backgroundImage = new Image();
+      backgroundImage.src = 'beachBG.jpg';
+      context.drawImage(backgroundImage, 0, 0, canvas.width, canvas.height);
+
+      // Draw foreground sprites
+      for (let i = 0; i < sprites_to_draw[1].length; i++) {
+        sprites_to_draw[1][i].draw();
+      }
+      // Update this to periodically change directions
+
+
+    }
+
+    function resize() {
+      canvas.width = window.innerWidth - 25;
+      canvas.height = window.innerHeight - 25;
+    }
+  </script>
+</body>
 
 </html>

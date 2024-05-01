@@ -42,6 +42,24 @@ class Sprite {
         this.border_hit = true;
     };
 
+    randomizeMovement(sprite) {
+        const direction = Math.floor(Math.random() * 4); // Random number between 0 and 3
+        switch (direction) {
+            case 0:
+                sprite.moveLeft();
+                break;
+            case 1:
+                sprite.moveRight();
+                break;
+            case 2:
+                sprite.moveUp();
+                break;
+            case 3:
+                sprite.moveDown();
+                break;
+        }
+    }
+
     draw(state) {
         var ctx = canvas.getContext('2d');
         //console.log(this.sprite_json[this.root_e][this.state][this.cur_frame]['w']);
@@ -56,11 +74,6 @@ class Sprite {
         if (this.sprite_json[this.root_e][this.state][this.cur_frame]['img'] == null) {
             this.sprite_json[this.root_e][this.state][this.cur_frame]['img'] = new Image();
             this.sprite_json[this.root_e][this.state][this.cur_frame]['img'].src = 'Penguins/' + this.root_e + '/' + this.state + '/' + this.cur_frame + '.png';
-        }
-
-
-        if (this.cur_bk_data != null) {
-            ctx.putImageData(this.cur_bk_data, (this.x - this.x_v), (this.y - this.y_v));
         }
 
         this.x += this.x_v;
@@ -119,6 +132,7 @@ class Sprite {
 
     }
 
+
     set_idle_state() {
         this.x_v = 0;
         this.y_v = 0;
@@ -139,6 +153,8 @@ class Sprite {
             this.border_hit = true;
         }
     }
+
+
 
 
 }
