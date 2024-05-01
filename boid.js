@@ -16,15 +16,19 @@ class Boid {
   }
 
   edges() {
-    if (this.position.x > width) {
-      this.position.x = 0;
-    } else if (this.position.x < 0) {
-      this.position.x = width;
+    if (this.position.x > width - 20) {
+      this.position.x = width - 20; // Assume sprite width buffer
+      this.velocity.x *= -1; // Reverse velocity
+    } else if (this.position.x < 20) {
+      this.position.x = 20;
+      this.velocity.x *= -1;
     }
-    if (this.position.y > height) {
-      this.position.y = 0;
-    } else if (this.position.y < 0) {
-      this.position.y = height;
+    if (this.position.y > height - 20) {
+      this.position.y = height - 20; // Assume sprite height buffer
+      this.velocity.y *= -1;
+    } else if (this.position.y < 20) {
+      this.position.y = 20;
+      this.velocity.y *= -1;
     }
   }
 

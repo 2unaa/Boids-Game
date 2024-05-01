@@ -12,9 +12,9 @@ const flock = [];
 function preload() {
   // Use the preload function to ensure sprites are loaded before setup runs
   loadJSON("../../Penguins/animationData.json", function (data) {
-    sprites_to_draw.push(new Sprite(data, -10, -10, "idle"));
-    sprites_to_draw.push(new Sprite(data, -10, -10, "idleBackAndForth"));
-    sprites_to_draw.push(new Sprite(data, -10, -10, "idleBreathing"));
+    sprites_to_draw.push(new Sprite(data, 0, 0, "idleFall"));
+    sprites_to_draw.push(new Sprite(data, 0, 0, "idleSpin"));
+    sprites_to_draw.push(new Sprite(data, 0, 0, "idleWave"));
   });
 }
 
@@ -23,7 +23,7 @@ function preload() {
 let alignSlider, cohesionSlider, separationSlider;
 
 function setup() {
-  createCanvas(1000, 500);
+  createCanvas(1300, 700);
   alignSlider = createSlider(0, 2, 1, 0.1);
   cohesionSlider = createSlider(0, 2, 1, 0.1);
   separationSlider = createSlider(0, 2, 1, 0.1);

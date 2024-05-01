@@ -6,14 +6,10 @@ class Sprite {
         this.y = y;
         this.state = start_state;
         this.root_e = "TenderBud";
-
         this.cur_frame = 0;
-
         this.cur_bk_data = null;
-
         this.x_v = 0;
         this.y_v = 0;
-
         this.border_hit = false;
 
     }
@@ -58,7 +54,6 @@ class Sprite {
         }
 
         if (this.sprite_json[this.root_e][this.state][this.cur_frame]['img'] == null) {
-            console.log("loading");
             this.sprite_json[this.root_e][this.state][this.cur_frame]['img'] = new Image();
             this.sprite_json[this.root_e][this.state][this.cur_frame]['img'].src = 'Penguins/' + this.root_e + '/' + this.state + '/' + this.cur_frame + '.png';
         }
@@ -81,7 +76,6 @@ class Sprite {
 
         this.cur_frame = this.cur_frame + 1;
         if (this.cur_frame >= this.sprite_json[this.root_e][this.state].length) {
-            console.log(this.cur_frame);
             this.cur_frame = 0;
         }
 
@@ -131,7 +125,6 @@ class Sprite {
         const idle_state = ["idle", "idleBackAndForth", "idleBreathing", "idleFall", "idleLayDown", "idleLookAround", "idleLookDown", "idleLookLeft", "idleLookRight", "idleLookUp", "idleSit", "idleSpin", "idleWave"];
 
         const random = Math.floor(Math.random() * idle_state.length);
-        console.log(idle_state[random]);
         this.state = idle_state[random];
     }
 
