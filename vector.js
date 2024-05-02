@@ -31,6 +31,12 @@ VectorMath.prototype.constructor = VectorMath;
  * @param mixed value
  * @return float
  */
+
+Vector.random = function () {
+    let angle = Math.random() * Math.PI * 2;
+    return new Vector(Math.cos(angle), Math.sin(angle));
+};
+
 VectorMath.parseFloat = function (value) {
     var r;
 

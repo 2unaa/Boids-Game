@@ -28,8 +28,8 @@
 
       $.getJSON("Penguins/animationData.json", function (data) {
         sprites_to_draw[1].push(new Sprite(data, 500, 100, "idleWave"));
-        sprites_to_draw[1].push(new Sprite(data, 400, 200, "idleWave"));
-        sprites_to_draw[1].push(new Sprite(data, 300, 300, "idleWave"));
+        sprites_to_draw[1].push(new Sprite(data, 400, 200, "idleSpin"));
+        sprites_to_draw[1].push(new Sprite(data, 300, 300, "idle"));
       });
 
 
@@ -51,15 +51,17 @@
       // Draw foreground sprites
       for (let i = 0; i < sprites_to_draw[1].length; i++) {
         sprites_to_draw[1][i].draw();
+        sprites_to_draw[1][i].update();
       }
       // Update this to periodically change directions
 
 
     }
 
+
     function resize() {
-      canvas.width = window.innerWidth - 25;
-      canvas.height = window.innerHeight - 25;
+      canvas.width = window.innerWidth - 50;
+      canvas.height = window.innerHeight - 50;
     }
   </script>
 </body>

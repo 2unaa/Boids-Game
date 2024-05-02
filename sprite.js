@@ -1,160 +1,85 @@
-//Parent Sprit Classa
 class Sprite {
     constructor(sprite_json, x, y, start_state) {
         this.sprite_json = sprite_json;
-        this.x = x;
-        this.y = y;
+        this.position = new Vector(x, y);  // Using Vector for position
+        this.velocity = new Vector(10, 10);  // Initial velocity is zero
         this.state = start_state;
         this.root_e = "TenderBud";
         this.cur_frame = 0;
         this.cur_bk_data = null;
-        this.x_v = 0;
-        this.y_v = 0;
         this.border_hit = false;
-
     }
 
-    moveLeft() {
-        this.x_v = -10;
-        this.y_v = 0;
-        this.state = 'walk_W';
-        this.border_hit = true;
-    };
+    applyRandomVelocity() {
+        const speed = 10;
+        let randomAngle = Math.random() * Math.PI * 2;
 
-    moveRight() {
-        this.x_v = 10;
-        this.y_v = 0;
-        this.state = 'walk_E';
-        this.border_hit = true;
-    };
+        // Check which boundary is closer and adjust the random angle to move away from that boundary
+        const centerX = canvas.width / 2;
+        const centerY = canvas.height / 2;
 
-    moveUp() {
-        this.y_v = -10;
-        this.x_v = 0;
-        this.state = 'walk_N';
-        this.border_hit = true;
-    };
-
-    moveDown() {
-        this.y_v = 10;
-        this.x_v = 0;
-        this.state = 'walk_S';
-        this.border_hit = true;
-    };
-
-    randomizeMovement(sprite) {
-        const direction = Math.floor(Math.random() * 4); // Random number between 0 and 3
-        switch (direction) {
-            case 0:
-                sprite.moveLeft();
-                break;
-            case 1:
-                sprite.moveRight();
-                break;
-            case 2:
-                sprite.moveUp();
-                break;
-            case 3:
-                sprite.moveDown();
-                break;
+        if (this.position.x < centerX && this.position.y < centerY) { // Top-left quadrant
+            randomAngle = (Math.random() * Math.PI / 2) + 0; // 0 to 90 degrees
+        } else if (this.position.x >= centerX && this.position.y < centerY) { // Top-right quadrant
+            randomAngle = (Math.random() * Math.PI / 2) + Math.PI / 2; // 90 to 180 degrees
+        } else if (this.position.x >= centerX && this.position.y >= centerY) { // Bottom-right quadrant
+            randomAngle = (Math.random() * Math.PI / 2) + Math.PI; // 180 to 270 degrees
+        } else if (this.position.x < centerX && this.position.y >= centerY) { // Bottom-left quadrant
+            randomAngle = (Math.random() * Math.PI / 2) + 3 * Math.PI / 2; // 270 to 360 degrees
         }
+
+        this.velocity = new Vector(Math.cos(randomAngle) * speed, Math.sin(randomAngle) * speed);
     }
 
-    draw(state) {
+    draw() {
         var ctx = canvas.getContext('2d');
-        //console.log(this.sprite_json[this.root_e][this.state][this.cur_frame]['w']);
-        // console.log(state['key_change']);
-        // console.log("KEY PRESS: ", state.key_change)
-
         if (this.cur_frame < 0 || this.cur_frame >= this.sprite_json[this.root_e][this.state].length) {
             console.error('Frame index out of bounds:', this.cur_frame);
             this.cur_frame = 0;
         }
 
-        if (this.sprite_json[this.root_e][this.state][this.cur_frame]['img'] == null) {
+        if (!this.sprite_json[this.root_e][this.state][this.cur_frame]['img']) {
             this.sprite_json[this.root_e][this.state][this.cur_frame]['img'] = new Image();
             this.sprite_json[this.root_e][this.state][this.cur_frame]['img'].src = 'Penguins/' + this.root_e + '/' + this.state + '/' + this.cur_frame + '.png';
         }
 
-        this.x += this.x_v;
-        this.y += this.y_v;
+        ctx.drawImage(this.sprite_json[this.root_e][this.state][this.cur_frame]['img'], this.position.x, this.position.y);
 
-
-        this.cur_bk_data = ctx.getImageData(this.x, this.y,
-            this.sprite_json[this.root_e][this.state][this.cur_frame]['w'],
-            this.sprite_json[this.root_e][this.state][this.cur_frame]['h']);
-
-
-        ctx.drawImage(this.sprite_json[this.root_e][this.state][this.cur_frame]['img'], this.x, this.y);
-
-        this.cur_frame = this.cur_frame + 1;
+        this.cur_frame++;
         if (this.cur_frame >= this.sprite_json[this.root_e][this.state].length) {
             this.cur_frame = 0;
         }
-
-        if (this.x > 0 && this.x < (window.innerWidth - this.sprite_json[this.root_e][this.state][this.cur_frame]['w']) &&
-            this.y > 0 && this.y < (window.innerHeight - this.sprite_json[this.root_e][this.state][this.cur_frame]['h'])) {
-            this.resetBoundaryFlag();
-        }
-
-        const reachedRight = this.x >= (canvas.width - this.sprite_json[this.root_e][this.state][this.cur_frame]['w']);
-        const reachedLeft = this.x <= 0;
-        const reachedBottom = this.y >= (canvas.height - this.sprite_json[this.root_e][this.state][this.cur_frame]['h']);
-        const reachedTop = this.y <= 0;
-
-        if (reachedRight && reachedBottom) {
-            this.bound_hit('E');
-            this.bound_hit('S');
-        } else if (reachedLeft && reachedBottom) {
-            this.bound_hit('W');
-            this.bound_hit('S');
-        } else if (reachedRight && reachedTop) {
-            this.bound_hit('E');
-            this.bound_hit('N');
-        } else if (reachedLeft && reachedTop) {
-            this.bound_hit('W');
-            this.bound_hit('N');
-        }
-
-        if (reachedRight) {
-            this.bound_hit('E');
-        } else if (reachedLeft) {
-            this.bound_hit('W');
-        } else if (reachedBottom) {
-            this.bound_hit('S');
-        } else if (reachedTop) {
-            this.bound_hit('N');
-        } else {
-            this.resetBoundaryFlag();
-        }
-
-        return false;
-
     }
 
+    update() {
+        this.position.add(this.velocity); // Move the sprite by the velocity
+        this.checkBounds(); // Check and handle boundary collisions
+    }
+
+    checkBounds() {
+        const frameWidth = this.sprite_json[this.root_e][this.state][this.cur_frame]['w'];
+        const frameHeight = this.sprite_json[this.root_e][this.state][this.cur_frame]['h'];
+        const canvasWidth = canvas.width;
+        const canvasHeight = canvas.height;
+        let bounced = false;
+
+        if (this.position.x + frameWidth > canvasWidth || this.position.x < 0) {
+            this.velocity = new Vector(-this.velocity.x, this.velocity.y); // Reverse direction on X axis
+            bounced = true;
+        }
+        if (this.position.y + frameHeight > canvasHeight || this.position.y < 0) {
+            this.velocity = new Vector(this.velocity.x, -this.velocity.y); // Reverse direction on Y axis
+            bounced = true;
+        }
+
+        if (bounced) {
+            this.applyRandomVelocity(); // Apply new random velocity on bounce
+        }
+    }
 
     set_idle_state() {
-        this.x_v = 0;
-        this.y_v = 0;
-        const idle_state = ["idle", "idleBackAndForth", "idleBreathing", "idleFall", "idleLayDown", "idleLookAround", "idleLookDown", "idleLookLeft", "idleLookRight", "idleLookUp", "idleSit", "idleSpin", "idleWave"];
-
-        const random = Math.floor(Math.random() * idle_state.length);
-        this.state = idle_state[random];
+        this.velocity = new Vector(0, 0); // Reset velocity to zero
+        const idle_states = ["idle", "idleBackAndForth", "idleBreathing", "idleFall", "idleLayDown", "idleLookAround", "idleLookDown", "idleLookLeft", "idleLookRight", "idleLookUp", "idleSit", "idleSpin", "idleWave"];
+        this.state = idle_states[Math.floor(Math.random() * idle_states.length)];
     }
-
-    resetBoundaryFlag() {
-        this.border_hit = false;
-    }
-
-
-    bound_hit(side) {
-        if (!this.border_hit) {
-            this.set_idle_state();
-            this.border_hit = true;
-        }
-    }
-
-
-
-
 }
