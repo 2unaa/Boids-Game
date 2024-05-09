@@ -8,7 +8,11 @@ class Sprite {
         this.cur_frame = 0;
         this.cur_bk_data = null;
         this.border_hit = false;
+        this.collisionCooldown = 0;
     }
+
+
+
 
     applyRandomVelocity() {
         const speed = 10;
@@ -49,20 +53,52 @@ class Sprite {
         this.velocity = new Vector(Math.cos(preferredAngle) * speed, Math.sin(preferredAngle) * speed);
     }
 
+    // Method to detect collision with another sprite
+    checkCollision(otherSprite) {
+        const dx = this.position.x - otherSprite.position.x;
+        const dy = this.position.y - otherSprite.position.y;
+        const distance = Math.sqrt(dx * dx + dy * dy);
+        const collisionDistance = 70; // You can adjust this threshold based on sprite size
 
-    draw() {
-        var ctx = canvas.getContext('2d');
+        if (this.collisionCooldown > 0 || otherSprite.collisionCooldown > 0) {
+            return; // Skip if either sprite is in cooldown
+        }
+        if (distance < collisionDistance) {
+            console.log("COLLIDED")
+            this.applyRandomVelocity();
+            otherSprite.applyRandomVelocity();
+
+            this.collisionCooldown = 30; // 10 frame cooldown
+            otherSprite.collisionCooldown = 30;
+        }
+    }
+
+    checkCollisions(allSprites) {
+        for (const sprite of allSprites) {
+            if (sprite !== this) {
+                this.checkCollision(sprite);
+            }
+        }
+    }
+
+    getFrameData() {
         if (this.cur_frame < 0 || this.cur_frame >= this.sprite_json[this.root_e][this.state].length) {
             console.error('Frame index out of bounds:', this.cur_frame);
             this.cur_frame = 0;
         }
+        return this.sprite_json[this.root_e][this.state][this.cur_frame];
+    }
 
-        if (!this.sprite_json[this.root_e][this.state][this.cur_frame]['img']) {
-            this.sprite_json[this.root_e][this.state][this.cur_frame]['img'] = new Image();
-            this.sprite_json[this.root_e][this.state][this.cur_frame]['img'].src = 'Penguins/' + this.root_e + '/' + this.state + '/' + this.cur_frame + '.png';
+    draw() {
+        var ctx = canvas.getContext('2d');
+        const frameData = this.getFrameData();
+
+        if (!frameData['img']) {
+            frameData['img'] = new Image();
+            frameData['img'].src = 'Penguins/' + this.root_e + '/' + this.state + '/' + this.cur_frame + '.png';
         }
 
-        ctx.drawImage(this.sprite_json[this.root_e][this.state][this.cur_frame]['img'], this.position.x, this.position.y);
+        ctx.drawImage(frameData['img'], this.position.x, this.position.y);
 
         this.cur_frame++;
         if (this.cur_frame >= this.sprite_json[this.root_e][this.state].length) {
@@ -70,14 +106,25 @@ class Sprite {
         }
     }
 
-    update() {
+
+    update(allSprites) {
+        if (this.collisionCooldown > 0) {
+            this.collisionCooldown--;
+            if (this.collisionCooldown === 0) {
+                console.log("applying random")
+                this.applyRandomVelocity();
+            }
+        }
+
         this.position.add(this.velocity);
         this.checkBounds();
+        this.checkCollisions(allSprites);
     }
 
     checkBounds() {
-        const frameWidth = this.sprite_json[this.root_e][this.state][this.cur_frame]['w'];
-        const frameHeight = this.sprite_json[this.root_e][this.state][this.cur_frame]['h'];
+        const frameData = this.getFrameData();
+        const frameWidth = frameData['w'];
+        const frameHeight = frameData['h'];
         const canvasWidth = canvas.width;
         const canvasHeight = canvas.height;
         let bounced = false;
@@ -102,3 +149,5 @@ class Sprite {
         this.state = idle_states[Math.floor(Math.random() * idle_states.length)];
     }
 }
+
+
