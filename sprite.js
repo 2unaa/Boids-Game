@@ -1,8 +1,8 @@
 class Sprite {
     constructor(sprite_json, x, y, start_state) {
         this.sprite_json = sprite_json;
-        this.position = new Vector(x, y);  // Using Vector for position
-        this.velocity = new Vector(10, 10);  // Initial velocity is zero
+        this.position = new Vector(x, y);
+        this.velocity = new Vector(10, 10); // Initial velocity
         this.state = start_state;
         this.root_e = "TenderBud";
         this.cur_frame = 0;
@@ -12,6 +12,64 @@ class Sprite {
     }
 
 
+    separate(allSprites) {
+        let desiredSeparation = 50;
+        let steer = new Vector(0, 0);
+        let count = 0;
+        for (let other of allSprites) {
+            let dx = this.position.x - other.position.x;
+            let dy = this.position.y - other.position.y;
+            let d = Math.sqrt(dx * dx + dy * dy);
+            if ((d > 0) && (d < desiredSeparation)) {
+                steer.add(new Vector(dx, dy));
+                count++;
+            }
+        }
+        if (count > 0) {
+            steer.div(count);
+            this.velocity.add(steer);
+        }
+    }
+
+    align(allSprites) {
+        let neighbordist = 50;
+        let averageVel = new Vector(0, 0);
+        let count = 0;
+        for (let other of allSprites) {
+            let dx = this.position.x - other.position.x;
+            let dy = this.position.y - other.position.y;
+            let d = Math.sqrt(dx * dx + dy * dy);
+            if ((d > 0) && (d < neighbordist)) {
+                averageVel.add(other.velocity);
+                count++;
+            }
+        }
+        if (count > 0) {
+            averageVel.div(count);
+            this.velocity.add(averageVel);
+        }
+    }
+
+
+    cohesion(allSprites) {
+        let neighbordist = 50;
+        let centerMass = new Vector(0, 0);
+        let count = 0;
+        for (let other of allSprites) {
+            let dx = this.position.x - other.position.x;
+            let dy = this.position.y - other.position.y;
+            let d = Math.sqrt(dx * dx + dy * dy);
+            if ((d > 0) && (d < neighbordist)) {
+                centerMass.add(other.position);
+                count++;
+            }
+        }
+        if (count > 0) {
+            centerMass.div(count);
+            let moveTowards = Vector.sub(centerMass, this.position);
+            this.velocity.add(moveTowards);
+        }
+    }
 
 
     applyRandomVelocity() {
@@ -108,14 +166,9 @@ class Sprite {
 
 
     update(allSprites) {
-        if (this.collisionCooldown > 0) {
-            this.collisionCooldown--;
-            if (this.collisionCooldown === 0) {
-                console.log("applying random")
-                this.applyRandomVelocity();
-            }
-        }
-
+        this.separate(allSprites);
+        this.align(allSprites);
+        this.cohesion(allSprites);
         this.position.add(this.velocity);
         this.checkBounds();
         this.checkCollisions(allSprites);
