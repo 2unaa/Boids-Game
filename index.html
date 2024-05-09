@@ -26,9 +26,9 @@
       resize();
 
 
-      $.getJSON("Penguins/animationData.json", function (data) {
-        sprites_to_draw[1].push(new Sprite(data, 500, 100, "idleWave"));
-        sprites_to_draw[1].push(new Sprite(data, 400, 200, "idleSpin"));
+      $.getJSON("Penguins/animationData.json", function (data) { //all the sprites
+        sprites_to_draw[1].push(new Sprite(data, 500, 100, "idle"));
+        sprites_to_draw[1].push(new Sprite(data, 400, 200, "idle"));
         sprites_to_draw[1].push(new Sprite(data, 300, 300, "idle"));
         sprites_to_draw[1].push(new Sprite(data, 300, 300, "idle"));
         sprites_to_draw[1].push(new Sprite(data, 300, 300, "idle"));
@@ -55,12 +55,11 @@
       backgroundImage.src = 'beachBG.jpg';
       context.drawImage(backgroundImage, 0, 0, canvas.width, canvas.height);
 
-      // Draw foreground sprites
+      // foreground sprites
       for (let i = 0; i < sprites_to_draw[1].length; i++) {
         sprites_to_draw[1][i].draw();
         sprites_to_draw[1][i].update(sprites_to_draw[1]);
       }
-      // Update this to periodically change directions
 
 
     }
